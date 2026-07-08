@@ -10,7 +10,7 @@
 
           <v-card-text>
             <v-text-field
-              v-model="score"
+              v-model.number="score"
               label="กรุณากรอกคะแนน (0 - 100)"
               type="number"
               min="0"
@@ -18,7 +18,7 @@
               outlined
               clearable
               :error-messages="errorMessage"
-              @keyup.enter="calculateGrade"
+              @input="clearError"
             ></v-text-field>
 
             <v-btn
@@ -26,21 +26,22 @@
               large
               color="primary"
               @click="calculateGrade"
-              :disabled="!score && score !== 0"
+              :disabled="score === null || score === ''"
             >
               <v-icon left>mdi-check-circle</v-icon>
               ตรวจเกรด
             </v-btn>
 
             <v-alert
-              v-if="grade !== null"
+              v-if="grade"
               :type="grade === 'F' ? 'error' : 'success'"
               class="mt-4 text-center"
               prominent
+              transition="scale-transition"
             >
               <div class="text-h5 font-weight-bold">{{ grade }}</div>
               <div class="subtitle-1">
-                คะแนน {{ score }} ได้เกรด <strong>{{ grade }}</strong>
+                คะแนน <strong>{{ numberResult }}</strong> ได้เกรด <strong>{{ grade }}</strong>
               </div>
             </v-alert>
           </v-card-text>
@@ -56,14 +57,19 @@ export default {
   data() {
     return {
       score: null,
+      numberResult: null,
       grade: null,
       errorMessage: "",
     };
   },
   methods: {
+    clearError() {
+      this.errorMessage = "";
+    },
     calculateGrade() {
       this.errorMessage = "";
       this.grade = null;
+      this.numberResult = null;
 
       const val = Number(this.score);
 
@@ -81,6 +87,8 @@ export default {
         this.errorMessage = "กรุณากรอกคะแนนในช่วง 0 - 100 เท่านั้น";
         return;
       }
+
+      this.numberResult = val;
 
       if (val >= 80) this.grade = "A";
       else if (val >= 70) this.grade = "B";
