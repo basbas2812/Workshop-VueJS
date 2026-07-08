@@ -15,6 +15,11 @@ const routes = [
     name: "aboutme",
     component: () => import("../views/AboutMe.vue"),
   },
+  {
+    path: "/grade",
+    name: "grade",
+    component: () => import("../views/GradeExecute.vue"),
+  },
 ];
 
 const router = new VueRouter({

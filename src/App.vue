@@ -40,6 +40,13 @@
       >
         <span class="mr-2">About Me</span>
       </v-btn>
+
+      <v-btn
+        text
+        to="/grade"
+      >
+        <span class="mr-2">Grade</span>
+      </v-btn>
     </v-app-bar>
 
     <v-main>
