@@ -28,12 +28,17 @@
       <v-spacer></v-spacer>
 
       <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
         text
+        to="/"
       >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
+        <span class="mr-2">Home</span>
+      </v-btn>
+
+      <v-btn
+        text
+        to="/aboutme"
+      >
+        <span class="mr-2">About Me</span>
       </v-btn>
     </v-app-bar>
 
