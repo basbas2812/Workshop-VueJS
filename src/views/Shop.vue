@@ -1,9 +1,9 @@
 <template>
   <v-container class="mt-5">
-    <h1 class="text-h4 font-weight-bold mb-4">🛍️ สินค้าทั้งหมด</h1>
+    <h1 class="text-h4 font-weight-bold mb-4">สินค้าทั้งหมด</h1>
     <v-text-field
       v-model="search"
-      label="🔍 ค้นหาสินค้า..."
+      label="ค้นหาสินค้า..."
       outlined
       dense
       clearable
@@ -34,7 +34,7 @@
               :color="item.quantity > 0 ? 'green' : 'red'"
               text-color="white"
             >
-              {{ item.quantity > 0 ? '🟢 คงเหลือ ' + item.quantity + ' ชิ้น' : '🔴 หมด' }}
+              {{ item.quantity > 0 ? 'คงเหลือ ' + item.quantity + ' ชิ้น' : 'หมด' }}
             </v-chip>
           </v-card-text>
           <v-card-actions>
@@ -45,7 +45,7 @@
               @click.stop="addToCart(item)"
               :disabled="item.quantity <= 0"
             >
-              🛒 เพิ่มลงตะกร้า
+              + เพิ่มลงตะกร้า
             </v-btn>
           </v-card-actions>
         </v-card>

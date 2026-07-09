@@ -22,7 +22,7 @@
           text-color="white"
           class="mb-4"
         >
-          {{ product.quantity > 0 ? '🟢 มีสินค้า ' + product.quantity + ' ชิ้น' : '🔴 สินค้าหมด' }}
+          {{ product.quantity > 0 ? 'มีสินค้า ' + product.quantity + ' ชิ้น' : 'สินค้าหมด' }}
         </v-chip>
         <p class="text-body-1 mt-4">
           {{ product.productDescription || 'ไม่มีรายละเอียดสินค้า' }}
@@ -45,7 +45,7 @@
           @click="addToCart"
           :disabled="product.quantity <= 0"
         >
-          🛒 เพิ่มลงตะกร้า ฿{{ (product.price * qty).toLocaleString() }}
+          + เพิ่มลงตะกร้า ฿{{ (product.price * qty).toLocaleString() }}
         </v-btn>
       </v-col>
     </v-row>

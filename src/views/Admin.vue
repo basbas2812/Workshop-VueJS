@@ -1,10 +1,10 @@
 <template>
   <v-container class="mt-5">
-    <h1 class="text-h4 font-weight-bold mb-4">⚙️ จัดการระบบ</h1>
+    <h1 class="text-h4 font-weight-bold mb-4">จัดการระบบ</h1>
 
     <v-tabs v-model="tab">
-      <v-tab key="products">📦 สินค้า</v-tab>
-      <v-tab key="orders">📋 ออเดอร์</v-tab>
+      <v-tab key="products">สินค้า</v-tab>
+      <v-tab key="orders">ออเดอร์</v-tab>
     </v-tabs>
 
     <v-tabs-items v-model="tab">

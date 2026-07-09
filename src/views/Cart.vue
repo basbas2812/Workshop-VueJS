@@ -1,6 +1,6 @@
 <template>
   <v-container class="mt-5">
-    <h1 class="text-h4 font-weight-bold mb-4">🛒 ตะกร้าสินค้า</h1>
+    <h1 class="text-h4 font-weight-bold mb-4">ตะกร้าสินค้า</h1>
 
     <v-row v-if="items.length === 0">
       <v-col class="text-center">
@@ -157,7 +157,7 @@ export default {
           customerAddress: this.customerAddress
         }
         await this.axios.post('http://localhost:3000/api/v1/orders', payload)
-        alert('✅ สั่งซื้อสำเร็จ!')
+        alert('สั่งซื้อสำเร็จ!')
         this.$store.dispatch('cart/clearCart')
         this.customerName = ''
         this.customerPhone = ''
@@ -165,7 +165,7 @@ export default {
         this.$router.push('/admin')
       } catch (err) {
         console.error(err)
-        alert('❌ สั่งซื้อไม่สำเร็จ: ' + (err.response?.data?.message || err.message))
+        alert('สั่งซื้อไม่สำเร็จ: ' + (err.response?.data?.message || err.message))
       } finally {
         this.loading = false
       }
