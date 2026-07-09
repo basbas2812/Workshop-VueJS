@@ -6,33 +6,15 @@
       dark
     >
       <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
+          <v-btn
+            text
+            to="/"
+          >
+            <span class="mr-2">Home</span>
+          </v-btn>
       </div>
 
       <v-spacer></v-spacer>
-
-      <v-btn
-        text
-        to="/"
-      >
-        <span class="mr-2">Home</span>
-      </v-btn>
 
       <v-btn
         text
@@ -46,6 +28,27 @@
         to="/grade"
       >
         <span class="mr-2">Grade</span>
+      </v-btn>
+
+      <v-btn
+        text
+        to="/shop"
+      >
+        <span class="mr-2">Shop</span>
+      </v-btn>
+
+      <v-btn
+        text
+        to="/login"
+      >
+        <span class="mr-2">Login</span>
+      </v-btn>
+
+      <v-btn
+        text
+        to="/register"
+      >
+        <span class="mr-2">Register</span>
       </v-btn>
     </v-app-bar>
 

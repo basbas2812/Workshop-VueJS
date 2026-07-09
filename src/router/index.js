@@ -20,6 +20,21 @@ const routes = [
     name: "grade",
     component: () => import("../views/GradeExecute.vue"),
   },
+  {
+    path: "/shop",
+    name: "shop",
+    component: () => import("../views/Shop.vue"),
+  },
+  {
+    path: "/login",
+    name: "login",
+    component: () => import("../views/Login.vue"),
+  },
+  {
+    path: "/register",
+    name: "register",
+    component: () => import("../views/Register.vue"),
+  },
 ];
 
 const router = new VueRouter({
