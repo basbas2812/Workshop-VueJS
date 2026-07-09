@@ -20,6 +20,26 @@ const routes = [
     name: "grade",
     component: () => import("../views/GradeExecute.vue"),
   },
+  {
+    path: "/shop",
+    name: "shop",
+    component: () => import("../views/Shop.vue"),
+  },
+  {
+    path: "/shop/:id",
+    name: "product-detail",
+    component: () => import("../views/ProductDetail.vue"),
+  },
+  {
+    path: "/cart",
+    name: "cart",
+    component: () => import("../views/Cart.vue"),
+  },
+  {
+    path: "/admin",
+    name: "admin",
+    component: () => import("../views/Admin.vue"),
+  },
 ];
 
 const router = new VueRouter({

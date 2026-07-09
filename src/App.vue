@@ -6,33 +6,15 @@
       dark
     >
       <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
+        <v-btn
+          text
+          to="/"
+        >
+        <span class="mr-2">Home</span>
+        </v-btn>
       </div>
 
       <v-spacer></v-spacer>
-
-      <v-btn
-        text
-        to="/"
-      >
-        <span class="mr-2">Home</span>
-      </v-btn>
 
       <v-btn
         text
@@ -47,6 +29,30 @@
       >
         <span class="mr-2">Grade</span>
       </v-btn>
+
+      <v-btn
+        text
+        to="/shop"
+      >
+        <span class="mr-2">Shop</span>
+      </v-btn>
+
+      <v-btn text to="/cart">
+        <v-badge
+          :content="cartCount"
+          :value="cartCount"
+          color="red"
+          overlap
+        >
+          <v-icon>mdi-cart</v-icon>
+        </v-badge>
+        <span class="ml-1">Cart</span>
+      </v-btn>
+
+      <v-btn text to="/admin">
+        <v-icon>mdi-cog</v-icon>
+        <span class="ml-1">Admin</span>
+      </v-btn>
     </v-app-bar>
 
     <v-main>
@@ -56,12 +62,13 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'App',
 
-  data: () => ({
-    //
-  }),
+  computed: {
+    ...mapGetters('cart', ['cartCount'])
+  }
 };
 </script>
