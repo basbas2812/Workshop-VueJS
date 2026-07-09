@@ -27,11 +27,11 @@
               <td>{{ item.productName }}</td>
               <td class="text-center">฿{{ item.price.toLocaleString() }}</td>
               <td class="text-center">
-                <v-btn icon small @click="updateQty(item.productId, item.quantity - 1)">
+                <v-btn icon small @click="updateQty(item.productId, item.quantity - 1)" :disabled="item.quantity <= 1">
                   <v-icon small>mdi-minus</v-icon>
                 </v-btn>
                 <span class="mx-2">{{ item.quantity }}</span>
-                <v-btn icon small @click="updateQty(item.productId, item.quantity + 1)">
+                <v-btn icon small @click="updateQty(item.productId, item.quantity + 1)" :disabled="item.quantity >= maxQty(item.productId)">
                   <v-icon small>mdi-plus</v-icon>
                 </v-btn>
               </td>
@@ -107,7 +107,8 @@ export default {
       customerName: '',
       customerPhone: '',
       customerAddress: '',
-      loading: false
+      loading: false,
+      stockMap: {}
     }
   },
   computed: {
@@ -119,7 +120,22 @@ export default {
       return this.customerName && this.customerPhone && this.customerAddress
     }
   },
+  created() {
+    this.fetchStock()
+  },
   methods: {
+    fetchStock() {
+      this.axios.get('http://localhost:3000/api/v1/products')
+        .then(res => {
+          const map = {}
+          res.data.products.forEach(p => { map[p._id] = p.quantity })
+          this.stockMap = map
+        })
+        .catch(err => console.error(err))
+    },
+    maxQty(productId) {
+      return this.stockMap[productId] || 0
+    },
     updateQty(productId, qty) {
       this.$store.dispatch('cart/updateQuantity', { productId, quantity: qty })
     },

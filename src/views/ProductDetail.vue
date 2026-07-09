@@ -34,7 +34,7 @@
             <v-icon>mdi-minus-circle</v-icon>
           </v-btn>
           <span class="text-h6 mx-4">{{ qty }}</span>
-          <v-btn icon @click="qty < (product.quantity || 99) && qty++">
+          <v-btn icon @click="qty < product.quantity && qty++" :disabled="qty >= product.quantity">
             <v-icon>mdi-plus-circle</v-icon>
           </v-btn>
         </div>

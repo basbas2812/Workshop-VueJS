@@ -51,7 +51,7 @@
 
       <v-btn text to="/admin">
         <v-icon>mdi-cog</v-icon>
-        <span class="ml-1">Admin</span>
+        <span class="ml-1">Manage</span>
       </v-btn>
     </v-app-bar>
 

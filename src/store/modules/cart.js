@@ -7,7 +7,7 @@ export default {
   },
   getters: {
     cartItems: state => state.items,
-    cartCount: state => state.items.reduce((sum, item) => sum + item.quantity, 0),
+    cartCount: state => state.items.length,
     cartTotal: state => state.items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
   },
   mutations: {
