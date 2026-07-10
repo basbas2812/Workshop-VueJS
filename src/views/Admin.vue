@@ -77,10 +77,10 @@
               <v-text-field v-model="form.productName" label="ชื่อสินค้า" outlined></v-text-field>
             </v-col>
             <v-col cols="6">
-              <v-text-field v-model.number="form.price" label="ราคา" type="number" outlined></v-text-field>
+              <v-text-field v-model.number="form.price" label="ราคา" type="number" outlined min="1" :rules="[v => (v && v > 0) || 'ต้องมากกว่า 0']"></v-text-field>
             </v-col>
             <v-col cols="6">
-              <v-text-field v-model.number="form.quantity" label="จำนวนในสต็อก" type="number" outlined></v-text-field>
+              <v-text-field v-model.number="form.quantity" label="จำนวนในสต็อก" type="number" outlined min="1" :rules="[v => (v && v > 0) || 'ต้องมากกว่า 0']"></v-text-field>
             </v-col>
             <v-col cols="12">
               <v-text-field v-model="form.productImage" label="URL รูปภาพ" outlined></v-text-field>
@@ -185,6 +185,10 @@ export default {
       this.form = { ...this.formDefault }
     },
     async saveProduct() {
+      if (this.form.price <= 0 || this.form.quantity <= 0) {
+        alert('ไม่สามารถบันทึกได้ ราคาและจำนวนต้องมากกว่า 0')
+        return
+      }
       this.saving = true
       try {
         if (this.editId) {

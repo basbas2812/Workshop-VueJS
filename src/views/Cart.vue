@@ -64,6 +64,10 @@
             label="เบอร์โทรศัพท์"
             outlined
             required
+            type="number"
+            min="0"
+            :rules="[v => !v || (v.length <= 10 && v.length >= 9) || 'เบอร์โทรต้อง 9-10 หลัก']"
+            oninput="if(this.value.length > 10) this.value = this.value.slice(0, 10)"
           ></v-text-field>
           <v-textarea
             v-model="customerAddress"
