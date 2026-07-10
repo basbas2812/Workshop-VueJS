@@ -104,6 +104,8 @@
 </template>
 
 <script>
+import api from '@/api'
+
 export default {
   name: 'Admin',
   data() {
@@ -151,29 +153,13 @@ export default {
     }
   },
   created() {
-    if (!localStorage.getItem('token')) {
-      this.$router.push('/login')
-      return
-    }
     this.fetchProducts()
     this.fetchOrders()
   },
   methods: {
-    authHeaders() {
-      return { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } }
-    },
-    handleAuthError(err) {
-      if (err.response && err.response.status === 401) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('username')
-        this.$router.push('/login')
-        return true
-      }
-      return false
-    },
     fetchProducts() {
       this.loadingProducts = true
-      this.axios.get('http://localhost:3000/api/v1/products')
+      api.get('/products')
         .then(res => { this.products = res.data.products })
         .catch(err => console.error(err))
         .finally(() => { this.loadingProducts = false })
@@ -207,18 +193,15 @@ export default {
       }
       this.saving = true
       try {
-        const config = this.authHeaders()
         if (this.editId) {
-          await this.axios.put('http://localhost:3000/api/v1/products/' + this.editId, this.form, config)
+          await api.put('/products/' + this.editId, this.form)
         } else {
-          await this.axios.post('http://localhost:3000/api/v1/products', this.form, config)
+          await api.post('/products', this.form)
         }
         this.fetchProducts()
         this.closeDialog()
       } catch (err) {
-        if (!this.handleAuthError(err)) {
-          alert('Error: ' + (err.response?.data?.message || err.message))
-        }
+        alert('Error: ' + (err.response?.data?.message || err.message))
       } finally {
         this.saving = false
       }
@@ -226,28 +209,24 @@ export default {
     async deleteProduct(id) {
       if (!confirm('แน่ใจว่าต้องการลบสินค้านี้?')) return
       try {
-        await this.axios.delete('http://localhost:3000/api/v1/products/' + id, this.authHeaders())
+        await api.delete('/products/' + id)
         this.fetchProducts()
       } catch (err) {
-        if (!this.handleAuthError(err)) {
-          alert('Error: ' + (err.response?.data?.message || err.message))
-        }
+        alert('Error: ' + (err.response?.data?.message || err.message))
       }
     },
     fetchOrders() {
       this.loadingOrders = true
-      this.axios.get('http://localhost:3000/api/v1/orders')
+      api.get('/orders')
         .then(res => { this.orders = res.data.orders })
         .catch(err => console.error(err))
         .finally(() => { this.loadingOrders = false })
     },
     async updateOrderStatus(id, status) {
       try {
-        await this.axios.put('http://localhost:3000/api/v1/orders/' + id, { status }, this.authHeaders())
+        await api.put('/orders/' + id, { status })
       } catch (err) {
-        if (!this.handleAuthError(err)) {
-          alert('Error: ' + (err.response?.data?.message || err.message))
-        }
+        alert('Error: ' + (err.response?.data?.message || err.message))
         this.fetchOrders()
       }
     },

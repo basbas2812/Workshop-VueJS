@@ -58,6 +58,8 @@
 </template>
 
 <script>
+import api from '@/api'
+
 export default {
   name: 'ProductDetail',
   data() {
@@ -72,7 +74,7 @@ export default {
   methods: {
     fetchProduct() {
       const id = this.$route.params.id
-      this.axios.get('http://localhost:3000/api/v1/products/' + id)
+      api.get('/products/' + id)
         .then(res => {
           this.product = res.data.product
         })

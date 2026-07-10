@@ -103,6 +103,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import api from '@/api'
 
 export default {
   name: 'Cart',
@@ -129,7 +130,7 @@ export default {
   },
   methods: {
     fetchStock() {
-      this.axios.get('http://localhost:3000/api/v1/products')
+      api.get('/products')
         .then(res => {
           const map = {}
           res.data.products.forEach(p => { map[p._id] = p.quantity })
@@ -160,7 +161,7 @@ export default {
           customerPhone: this.customerPhone,
           customerAddress: this.customerAddress
         }
-        await this.axios.post('http://localhost:3000/api/v1/orders', payload)
+        await api.post('/orders', payload)
         alert('สั่งซื้อสำเร็จ!')
         this.$store.dispatch('cart/clearCart')
         this.customerName = ''

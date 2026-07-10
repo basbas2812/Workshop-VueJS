@@ -55,6 +55,8 @@
 </template>
 
 <script>
+import api from '@/api'
+
 export default {
   name: 'Shop',
   data() {
@@ -76,7 +78,7 @@ export default {
   },
   methods: {
     fetchProducts() {
-      this.axios.get('http://localhost:3000/api/v1/products')
+      api.get('/products')
         .then(res => {
           this.products = res.data.products
         })

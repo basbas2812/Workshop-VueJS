@@ -68,6 +68,8 @@
 </template>
 
 <script>
+import api from '@/api'
+
 export default {
   name: 'Register',
   data() {
@@ -86,7 +88,7 @@ export default {
       this.success = ''
       this.loading = true
       try {
-        await this.axios.post('http://localhost:3000/api/v1/users/register', {
+        await api.post('/users/register', {
           name: this.name,
           password: this.password
         })

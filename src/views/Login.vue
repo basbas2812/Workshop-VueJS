@@ -52,6 +52,8 @@
 </template>
 
 <script>
+import api from '@/api'
+
 export default {
   name: 'Login',
   data() {
@@ -67,12 +69,14 @@ export default {
       this.error = ''
       this.loading = true
       try {
-        const res = await this.axios.post('http://localhost:3000/api/v1/users/login', {
+        const res = await api.post('/users/login', {
           name: this.name,
           password: this.password
         })
-        localStorage.setItem('token', res.data.token)
-        localStorage.setItem('username', this.name)
+        await this.$store.dispatch('auth/login', {
+          token: res.data.token,
+          username: this.name
+        })
         this.$router.push('/admin')
       } catch (err) {
         this.error = err.response?.data || 'เข้าสู่ระบบไม่สำเร็จ'

@@ -97,38 +97,29 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState, mapActions } from 'vuex'
 
 export default {
   name: 'App',
   data() {
     return {
       showLogoutDialog: false,
-      loggingOut: false,
-      token: localStorage.getItem('token'),
-      username: localStorage.getItem('username') || 'User'
+      loggingOut: false
     }
   },
   computed: {
     ...mapGetters('cart', ['cartCount']),
+    ...mapState('auth', ['token', 'username']),
     isLoggedIn() {
       return !!this.token
     }
   },
-  watch: {
-    '$route'() {
-      this.token = localStorage.getItem('token')
-      this.username = localStorage.getItem('username') || 'User'
-    }
-  },
   methods: {
+    ...mapActions('auth', ['logout']),
     confirmLogout() {
       this.loggingOut = true
       setTimeout(() => {
-        localStorage.removeItem('token')
-        localStorage.removeItem('username')
-        this.token = null
-        this.username = ''
+        this.logout()
         this.showLogoutDialog = false
         this.loggingOut = false
         this.$router.push('/')
