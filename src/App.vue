@@ -1,59 +1,94 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-btn
-          text
-          to="/"
-        >
-        <span class="mr-2">Home</span>
-        </v-btn>
-      </div>
+    <v-app-bar app color="primary" dark elevate-on-scroll>
+      <v-btn text to="/" class="text-h6 font-weight-bold">
+        <v-icon left large>mdi-store</v-icon>
+        MyShop
+      </v-btn>
 
       <v-spacer></v-spacer>
 
-      <v-btn
-        text
-        to="/aboutme"
-      >
-        <span class="mr-2">About Me</span>
-      </v-btn>
-
-      <v-btn
-        text
-        to="/grade"
-      >
-        <span class="mr-2">Grade</span>
-      </v-btn>
-
-      <v-btn
-        text
-        to="/shop"
-      >
-        <span class="mr-2">Shop</span>
+      <v-btn text to="/shop">
+        <v-icon left>mdi-storefront</v-icon>
+        <span class="d-none d-sm-flex">Shop</span>
       </v-btn>
 
       <v-btn text to="/cart">
-        <v-badge
-          :content="cartCount"
-          :value="cartCount"
-          color="red"
-          overlap
-        >
+        <v-badge :content="cartCount" :value="cartCount" color="red" overlap>
           <v-icon>mdi-cart</v-icon>
         </v-badge>
-        <span class="ml-1">Cart</span>
+        <span class="ml-1 d-none d-sm-flex">Cart</span>
       </v-btn>
 
-      <v-btn text to="/admin">
-        <v-icon>mdi-cog</v-icon>
-        <span class="ml-1">Manage</span>
-      </v-btn>
+      <v-menu offset-y>
+        <template v-slot:activator="{ on }">
+          <v-btn text v-on="on">
+            <v-icon left>mdi-dots-vertical</v-icon>
+            <span class="d-none d-sm-flex">More</span>
+          </v-btn>
+        </template>
+        <v-list dense>
+          <v-list-item to="/aboutme" link>
+            <v-list-item-icon><v-icon>mdi-account</v-icon></v-list-item-icon>
+            <v-list-item-title>About Me</v-list-item-title>
+          </v-list-item>
+          <v-list-item to="/grade" link>
+            <v-list-item-icon><v-icon>mdi-calculator</v-icon></v-list-item-icon>
+            <v-list-item-title>Grade</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
+      <template v-if="isLoggedIn">
+        <v-btn text to="/admin">
+          <v-icon left>mdi-cog</v-icon>
+          <span class="d-none d-sm-flex">Manage</span>
+        </v-btn>
+
+        <v-menu offset-y min-width="180">
+          <template v-slot:activator="{ on }">
+            <v-btn text v-on="on" class="ml-2">
+              <v-icon left>mdi-account-circle</v-icon>
+              <span class="d-none d-sm-flex">{{ username }}</span>
+              <v-icon right small>mdi-chevron-down</v-icon>
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item @click="showLogoutDialog = true">
+              <v-list-item-icon><v-icon color="error">mdi-logout</v-icon></v-list-item-icon>
+              <v-list-item-title class="error--text">ออกจากระบบ</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </template>
+      <template v-else>
+        <v-btn text to="/register">
+          <v-icon left>mdi-account-plus</v-icon>
+          <span class="d-none d-sm-flex">Register</span>
+        </v-btn>
+        <v-btn text to="/login">
+          <v-icon left>mdi-login</v-icon>
+          <span class="d-none d-sm-flex">Login</span>
+        </v-btn>
+      </template>
     </v-app-bar>
+
+    <v-dialog v-model="showLogoutDialog" max-width="400">
+      <v-card>
+        <v-card-title class="text-h5">
+          <v-icon left color="error">mdi-logout</v-icon>
+          ออกจากระบบ
+        </v-card-title>
+        <v-card-text class="text-body-1">
+          คุณต้องการออกจากระบบใช่หรือไม่?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text color="grey" @click="showLogoutDialog = false">ยกเลิก</v-btn>
+          <v-btn text color="error" @click="confirmLogout" :loading="loggingOut">ออกจากระบบ</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <v-main>
       <router-view/>
@@ -66,9 +101,39 @@ import { mapGetters } from 'vuex'
 
 export default {
   name: 'App',
-
+  data() {
+    return {
+      showLogoutDialog: false,
+      loggingOut: false,
+      token: localStorage.getItem('token'),
+      username: localStorage.getItem('username') || 'User'
+    }
+  },
   computed: {
-    ...mapGetters('cart', ['cartCount'])
+    ...mapGetters('cart', ['cartCount']),
+    isLoggedIn() {
+      return !!this.token
+    }
+  },
+  watch: {
+    '$route'() {
+      this.token = localStorage.getItem('token')
+      this.username = localStorage.getItem('username') || 'User'
+    }
+  },
+  methods: {
+    confirmLogout() {
+      this.loggingOut = true
+      setTimeout(() => {
+        localStorage.removeItem('token')
+        localStorage.removeItem('username')
+        this.token = null
+        this.username = ''
+        this.showLogoutDialog = false
+        this.loggingOut = false
+        this.$router.push('/')
+      }, 300)
+    }
   }
 };
 </script>
