@@ -1,8 +1,10 @@
 import axios from 'axios'
 import router from '@/router'
 
+const BASE = 'http://localhost:3000'
+
 const api = axios.create({
-  baseURL: 'http://localhost:3000/api/v1'
+  baseURL: BASE + '/api/v1'
 })
 
 api.interceptors.request.use(config => {
@@ -24,5 +26,12 @@ api.interceptors.response.use(
     return Promise.reject(err)
   }
 )
+
+export function imageUrl(path) {
+  if (!path) return 'https://via.placeholder.com/300'
+  if (path.startsWith('http')) return path
+  if (path.startsWith('/')) return BASE + path
+  return BASE + '/' + path
+}
 
 export default api

@@ -17,7 +17,7 @@
       >
         <v-card @click="$router.push('/shop/' + item._id)" hover>
           <v-img
-            :src="item.productImage || 'https://via.placeholder.com/300'"
+            :src="imageUrl(item.productImage)"
             height="200"
             contain
             class="grey lighten-3"
@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import api from '@/api'
+import api, { imageUrl } from '@/api'
 
 export default {
   name: 'Shop',
@@ -77,6 +77,7 @@ export default {
     this.fetchProducts()
   },
   methods: {
+    imageUrl,
     fetchProducts() {
       api.get('/products')
         .then(res => {

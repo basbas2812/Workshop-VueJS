@@ -6,7 +6,7 @@
     <v-row v-if="product">
       <v-col cols="12" md="6">
         <v-img
-          :src="product.productImage || 'https://via.placeholder.com/500'"
+          :src="imageUrl(product.productImage)"
           height="400"
           contain
           class="grey lighten-3"
@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import api from '@/api'
+import api, { imageUrl } from '@/api'
 
 export default {
   name: 'ProductDetail',
@@ -72,6 +72,7 @@ export default {
     this.fetchProduct()
   },
   methods: {
+    imageUrl,
     fetchProduct() {
       const id = this.$route.params.id
       api.get('/products/' + id)

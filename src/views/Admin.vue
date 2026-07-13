@@ -83,7 +83,22 @@
               <v-text-field v-model.number="form.quantity" label="จำนวนในสต็อก" type="number" outlined min="1" :rules="[v => (v && v > 0) || 'ต้องมากกว่า 0']"></v-text-field>
             </v-col>
             <v-col cols="12">
-              <v-text-field v-model="form.productImage" label="URL รูปภาพ" outlined></v-text-field>
+              <v-file-input
+                v-model="file"
+                label="เลือกรูปภาพ"
+                accept="image/*"
+                outlined
+                dense
+                prepend-icon="mdi-camera"
+                @change="previewImage"
+              ></v-file-input>
+              <v-img
+                v-if="preview"
+                :src="preview"
+                max-height="200"
+                contain
+                class="grey lighten-3 mb-2"
+              ></v-img>
             </v-col>
             <v-col cols="12">
               <v-text-field v-model="form.productDescription" label="รายละเอียดสินค้า" outlined></v-text-field>
@@ -104,7 +119,7 @@
 </template>
 
 <script>
-import api from '@/api'
+import api, { imageUrl } from '@/api'
 
 export default {
   name: 'Admin',
@@ -116,11 +131,12 @@ export default {
       dialog: false,
       editId: '',
       saving: false,
+      file: null,
+      preview: '',
       form: {
         productName: '',
         price: 0,
         quantity: 0,
-        productImage: '',
         productDescription: '',
         category: ''
       },
@@ -128,7 +144,6 @@ export default {
         productName: '',
         price: 0,
         quantity: 0,
-        productImage: '',
         productDescription: '',
         category: ''
       },
@@ -153,10 +168,20 @@ export default {
     }
   },
   created() {
-    this.fetchProducts()
-    this.fetchOrders()
+    api.get('/users/me').then(() => {
+      this.fetchProducts()
+      this.fetchOrders()
+    }).catch(() => {})
   },
   methods: {
+    imageUrl,
+    previewImage(file) {
+      if (file) {
+        this.preview = URL.createObjectURL(file)
+      } else if (!this.editId) {
+        this.preview = ''
+      }
+    },
     fetchProducts() {
       this.loadingProducts = true
       api.get('/products')
@@ -166,16 +191,19 @@ export default {
     },
     openNewProduct() {
       this.editId = ''
+      this.file = null
+      this.preview = ''
       this.form = { ...this.formDefault }
       this.dialog = true
     },
     openEditProduct(item) {
       this.editId = item._id
+      this.file = null
+      this.preview = imageUrl(item.productImage)
       this.form = {
         productName: item.productName,
         price: item.price,
         quantity: item.quantity,
-        productImage: item.productImage || '',
         productDescription: item.productDescription || '',
         category: item.category || ''
       }
@@ -184,6 +212,8 @@ export default {
     closeDialog() {
       this.dialog = false
       this.editId = ''
+      this.file = null
+      this.preview = ''
       this.form = { ...this.formDefault }
     },
     async saveProduct() {
@@ -193,10 +223,19 @@ export default {
       }
       this.saving = true
       try {
+        const formData = new FormData()
+        formData.append('productName', this.form.productName)
+        formData.append('price', this.form.price)
+        formData.append('quantity', this.form.quantity)
+        formData.append('productDescription', this.form.productDescription)
+        formData.append('category', this.form.category)
+        if (this.file) {
+          formData.append('productImage', this.file)
+        }
         if (this.editId) {
-          await api.put('/products/' + this.editId, this.form)
+          await api.put('/products/' + this.editId, formData)
         } else {
-          await api.post('/products', this.form)
+          await api.post('/products', formData)
         }
         this.fetchProducts()
         this.closeDialog()
