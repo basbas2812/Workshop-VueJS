@@ -53,12 +53,18 @@
               {{ statusText(item.status) }}
             </v-chip>
           </template>
+          <template v-slot:[`item.detail`]="{ item }">
+            <v-btn icon small color="info" @click="openOrderDetail(item)">
+              <v-icon>mdi-file-document-outline</v-icon>
+            </v-btn>
+          </template>
           <template v-slot:[`item.actions`]="{ item }">
             <v-select
               v-model="item.status"
               :items="statusOptions"
               dense
               solo
+              class="order-status-select"
               @change="updateOrderStatus(item._id, item.status)"
             ></v-select>
           </template>
@@ -115,6 +121,80 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="orderDialog" max-width="700">
+      <v-card v-if="selectedOrder">
+        <v-card-title class="text-h5">
+          <v-icon left color="primary">mdi-receipt</v-icon>
+          รายละเอียดออเดอร์
+          <v-spacer></v-spacer>
+          <v-chip small :color="statusColor(selectedOrder.status)" text-color="white">
+            {{ statusText(selectedOrder.status) }}
+          </v-chip>
+        </v-card-title>
+        <v-card-text>
+          <v-row class="mb-4">
+            <v-col cols="12" md="4">
+              <div class="text-caption grey--text">ชื่อลูกค้า</div>
+              <div class="text-body-1 font-weight-medium">{{ selectedOrder.customerName }}</div>
+            </v-col>
+            <v-col cols="12" md="4">
+              <div class="text-caption grey--text">เบอร์โทร</div>
+              <div class="text-body-1 font-weight-medium">{{ selectedOrder.customerPhone }}</div>
+            </v-col>
+            <v-col cols="12" md="4">
+              <div class="text-caption grey--text">วันที่สั่งซื้อ</div>
+              <div class="text-body-1 font-weight-medium">{{ new Date(selectedOrder.createdAt).toLocaleDateString('th-TH') }}</div>
+            </v-col>
+            <v-col cols="12">
+              <div class="text-caption grey--text">ที่อยู่จัดส่ง</div>
+              <div class="text-body-1">{{ selectedOrder.customerAddress }}</div>
+            </v-col>
+          </v-row>
+
+          <v-divider class="mb-4"></v-divider>
+
+          <div class="text-subtitle-1 font-weight-bold mb-2">สินค้าที่สั่ง</div>
+          <v-simple-table>
+            <thead>
+              <tr>
+                <th class="text-left">สินค้า</th>
+                <th class="text-right">ราคา/ชิ้น</th>
+                <th class="text-right">จำนวน</th>
+                <th class="text-right">รวม</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, i) in selectedOrder.items" :key="i">
+                <td>
+                  <div class="d-flex align-center">
+                    <v-avatar size="40" tile class="mr-3">
+                      <v-img :src="imageUrl(item.productId?.productImage)" contain></v-img>
+                    </v-avatar>
+                    {{ item.productName }}
+                  </div>
+                </td>
+                <td class="text-right">฿{{ item.price.toLocaleString() }}</td>
+                <td class="text-right">{{ item.quantity }}</td>
+                <td class="text-right font-weight-bold">฿{{ (item.price * item.quantity).toLocaleString() }}</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" class="text-right text-subtitle-1 font-weight-bold">รวมทั้งสิ้น</td>
+                <td class="text-right text-subtitle-1 font-weight-bold primary--text">
+                  ฿{{ selectedOrder.totalPrice.toLocaleString() }}
+                </td>
+              </tr>
+            </tfoot>
+          </v-simple-table>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text color="grey" @click="orderDialog = false">ปิด</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -156,12 +236,15 @@ export default {
       ],
       orders: [],
       loadingOrders: false,
+      orderDialog: false,
+      selectedOrder: null,
       orderHeaders: [
         { text: 'รหัส', value: '_id' },
         { text: 'ลูกค้า', value: 'customerName' },
         { text: 'วันที่', value: 'createdAt' },
         { text: 'ยอดรวม', value: 'totalPrice' },
         { text: 'สถานะ', value: 'status' },
+        { text: 'รายละเอียด', value: 'detail', sortable: false },
         { text: 'จัดการ', value: 'actions', sortable: false }
       ],
       statusOptions: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
@@ -208,6 +291,10 @@ export default {
         category: item.category || ''
       }
       this.dialog = true
+    },
+    openOrderDetail(order) {
+      this.selectedOrder = order
+      this.orderDialog = true
     },
     closeDialog() {
       this.dialog = false
