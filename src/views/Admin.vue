@@ -50,6 +50,7 @@
               :color="statusColor(item.status)"
               text-color="white"
             >
+              <v-icon small left>{{ statusIcon(item.status) }}</v-icon>
               {{ statusText(item.status) }}
             </v-chip>
           </template>
@@ -59,14 +60,19 @@
             </v-btn>
           </template>
           <template v-slot:[`item.actions`]="{ item }">
-            <v-select
-              v-model="item.status"
-              :items="statusOptions"
-              dense
-              solo
-              class="order-status-select"
-              @change="updateOrderStatus(item._id, item.status)"
-            ></v-select>
+            <v-btn
+              v-for="action in nextActions(item.status)"
+              :key="action.value"
+              x-small
+              :color="action.color"
+              :disabled="actionDisabled"
+              depressed
+              class="mr-1"
+              @click="confirmStatusChange(item, action.value)"
+            >
+              <v-icon small left>{{ action.icon }}</v-icon>
+              {{ action.label }}
+            </v-btn>
           </template>
         </v-data-table>
       </v-tab-item>
@@ -195,6 +201,33 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="statusConfirmDialog" max-width="400">
+      <v-card>
+        <v-card-title class="text-h5">
+          <v-icon left :color="statusTarget.status === 'cancelled' ? 'error' : 'success'">
+            {{ statusTarget.status === 'cancelled' ? 'mdi-alert-circle' : 'mdi-check-circle' }}
+          </v-icon>
+          เปลี่ยนสถานะออเดอร์
+        </v-card-title>
+        <v-card-text class="text-body-1">
+          คุณต้องการเปลี่ยนสถานะเป็น
+          <strong>{{ statusText(statusTarget.status) }}</strong> ใช่หรือไม่?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text color="grey" @click="statusConfirmDialog = false">ยกเลิก</v-btn>
+          <v-btn
+            text
+            :color="statusTarget.status === 'cancelled' ? 'error' : 'primary'"
+            :loading="actionDisabled"
+            @click="executeStatusChange"
+          >
+            ยืนยัน
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -238,6 +271,9 @@ export default {
       loadingOrders: false,
       orderDialog: false,
       selectedOrder: null,
+      statusConfirmDialog: false,
+      statusTarget: { id: null, status: null },
+      actionDisabled: false,
       orderHeaders: [
         { text: 'รหัส', value: '_id' },
         { text: 'ลูกค้า', value: 'customerName' },
@@ -247,7 +283,7 @@ export default {
         { text: 'รายละเอียด', value: 'detail', sortable: false },
         { text: 'จัดการ', value: 'actions', sortable: false }
       ],
-      statusOptions: ['pending', 'confirmed', 'shipped', 'delivered', 'cancelled']
+
     }
   },
   created() {
@@ -348,13 +384,37 @@ export default {
         .catch(err => console.error(err))
         .finally(() => { this.loadingOrders = false })
     },
-    async updateOrderStatus(id, status) {
+    confirmStatusChange(order, status) {
+      this.statusTarget = { id: order._id, status }
+      this.statusConfirmDialog = true
+    },
+    async executeStatusChange() {
+      this.actionDisabled = true
       try {
-        await api.put('/orders/' + id, { status })
+        await api.put('/orders/' + this.statusTarget.id, { status: this.statusTarget.status })
+        this.statusConfirmDialog = false
+        this.fetchOrders()
       } catch (err) {
         alert('Error: ' + (err.response?.data?.message || err.message))
         this.fetchOrders()
+      } finally {
+        this.actionDisabled = false
+        this.statusTarget = { id: null, status: null }
       }
+    },
+    statusIcon(status) {
+      const map = { pending: 'mdi-clock-outline', confirmed: 'mdi-check-circle-outline', shipped: 'mdi-truck-delivery', delivered: 'mdi-check-all', cancelled: 'mdi-close-circle' }
+      return map[status] || 'mdi-help-circle'
+    },
+    nextActions(status) {
+      const map = {
+        pending:    [{ value: 'confirmed', label: 'ยืนยัน', icon: 'mdi-check', color: 'success' }, { value: 'cancelled', label: 'ยกเลิก', icon: 'mdi-close', color: 'error' }],
+        confirmed:  [{ value: 'shipped', label: 'จัดส่ง', icon: 'mdi-truck', color: 'primary' }, { value: 'cancelled', label: 'ยกเลิก', icon: 'mdi-close', color: 'error' }],
+        shipped:    [{ value: 'delivered', label: 'สำเร็จ', icon: 'mdi-check-all', color: 'success' }, { value: 'cancelled', label: 'ยกเลิก', icon: 'mdi-close', color: 'error' }],
+        delivered:  [],
+        cancelled:  []
+      }
+      return map[status] || []
     },
     statusColor(status) {
       const map = { pending: 'orange', confirmed: 'blue', shipped: 'purple', delivered: 'green', cancelled: 'red' }
