@@ -167,7 +167,7 @@ export default {
         this.customerName = ''
         this.customerPhone = ''
         this.customerAddress = ''
-        this.$router.push('/admin')
+        this.$router.push('/')
       } catch (err) {
         console.error(err)
         alert('สั่งซื้อไม่สำเร็จ: ' + (err.response?.data?.message || err.message))
